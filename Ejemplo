@@ -1,0 +1,14 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import itertools
+
+df = pd.read_csv('D:/andrgome/Documents/Emisores/Bancolombia/BancosColombianos.csv',encoding='latin-1')
+df_BBB = df[df.ENTIDAD.isin(['BANCO DE BOGOTA', 'BANCOLOMBIA','DAVIVIENDA', 'BBVA COLOMBIA'])]
+
+grouped = df_BBB.groupby('ENTIDAD')
+
+for key, group in grouped:
+    plt.plot(group.FECHAEEFF, group.ROE, label=key)
+plt.legend();
