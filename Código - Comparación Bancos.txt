@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.font_manager as font_manager
+
+
+
+df = pd.read_csv('D:/andrgome/Documents/Emisores/Bancolombia/BancosColombianos.csv',encoding='latin-1')
+df_Bog = df[df.ENTIDAD.isin(['BANCO DE BOGOTA'])]
+df_Bcol = df[df.ENTIDAD.isin(['BANCOLOMBIA'])]
+df_Davivi = df[df.ENTIDAD.isin(['DAVIVIENDA'])]
+df_Bbva = df[df.ENTIDAD.isin(['BBVA COLOMBIA'])]
+
+tick_spacing = 5
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+tipo = 'NIM'
+
+#Gráfico
+fig = plt.figure()
+ax = plt.subplot(111)
+ax.plot(df_Bog['FECHAEEFF'],df_Bog[tipo],color='darkblue',label='Banco de Bogotá',linewidth=5)
+ax.plot(df_Bog['FECHAEEFF'],df_Bcol[tipo],color='gold',label='Bancolombia',linewidth=5)
+ax.plot(df_Bog['FECHAEEFF'],df_Davivi[tipo],color='dimgray',label='Davivienda',linewidth=5)
+ax.plot(df_Bog['FECHAEEFF'],df_Bbva[tipo],color='silver',label='Bbva',linewidth=5)
+ax.legend(frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=10)
+ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+vals = ax.get_yticks()
+ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+plt.xticks(rotation=90)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax.title.set_text(tipo)
+ax.title.set_fontfamily('arial')
+plt.box(on=None)
+plt.show()

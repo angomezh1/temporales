@@ -10,7 +10,7 @@ sns.boxplot(x="CATDUR", y="OAS", data=df_BBB[["CATDUR","OAS"]],order=["Menor 3Y"
 plt.xticks(rotation=90)
 plt.show()
 
-----------------------------------------------
+--------------------------------------------------------------------------------------------------------------------
 
 df = pd.read_csv('Dif_spreads.csv')
 x1 = df['BANBOG Sub26 vs Senior27']
@@ -27,7 +27,7 @@ ax1.hist(x1, color="gold")
 ax2.hist(x2, color="gold")
 plt.show()
 
-----------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
 
 import pandas as pd
 import numpy as np
@@ -46,7 +46,7 @@ for key, group in grouped:
     plt.plot(group.FECHAEEFF, group.ROE, label=key)
 plt.legend();
 
-----------------------------------------------
+---------------------------------------------------------------------------------------------------------------
 
 import pandas as pd
 import numpy as np
@@ -85,3 +85,152 @@ ax.title.set_text(tipo)
 ax.title.set_fontfamily('arial')
 plt.box(on=None)
 plt.show()
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
+import matplotlib.ticker as ticker
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDEmisiones.csv',encoding='latin-1')
+
+search ="Bonos" , "BOCEAS"
+bool_series1=df["TITULOVALOR"].str.startswith(search) 
+df.TITULOVALOR[bool_series1] ="Bono"
+
+search ="T"
+bool_series2=df["TITULOVALOR"].str.startswith(search) 
+df.TITULOVALOR[bool_series2] ="Titularización"
+
+
+x = df.groupby(["AñoEmision","TITULOVALOR"]).agg({"MONTOCOLOCADO":"sum"}).unstack().fillna(0)
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+ax = x.plot(kind='bar', stacked=True, legend=['TITULOVALOR'],color=['darkblue','blueviolet','gold','grey','lightgrey'])
+ax.legend(('Bonos','Cdt','Papeles Comerciales','Titularizaciones'),frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=4)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: '{:,.2f}'.format(y/1000000) + 'B'))
+ax.title.set_fontfamily('arial')
+plt.box(on=None)
+
+----------------------------------------------------------------------------------------------------------------------
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
+import matplotlib.ticker as ticker
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDEmisiones.csv',encoding='latin-1')
+df_Papeles = df[df.TITULOVALOR.isin(['Papeles Comerciales'])]
+
+
+x = df.groupby(["AñoEmision","TITULOVALOR"]).agg({"MONTOCOLOCADO":"sum"}).unstack().fillna(0)
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+ax = x.plot(kind='bar', stacked=True, legend=['TITULOVALOR'],color=['darkblue','blueviolet','gold','grey','lightgrey'])
+ax.legend(('Bonos','Cdt','Papeles Comerciales','Titularizaciones'),frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=4)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: '{:,.0f}'.format(y/1000000) + 'B'))
+ax.title.set_fontfamily('arial')
+plt.box(on=None)
+
+-------------------------------------------------------------------------------------------------------------------------
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
+import matplotlib.ticker as ticker
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDEmisiones.csv',encoding='latin-1')
+df_Papeles = df[df.TITULOVALOR.isin(['Papeles Comerciales'])]
+
+
+x = df_Papeles.groupby(["AñoEmision","TITULOVALOR"]).agg({"MONTOCOLOCADO":"sum"}).unstack().fillna(0)
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+ax = x.plot(kind='bar', stacked=True, legend=['TITULOVALOR'],color=['gold'])
+ax.legend(('Papeles Comerciales'),frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=1)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: '{:,.2f}'.format(y/1000000) + 'B'))
+ax.title.set_fontfamily('arial')
+plt.box(on=None)
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
+import matplotlib.ticker as ticker
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDEmisiones.csv',encoding='latin-1')
+df_Papeles = df[df.TITULOVALOR.isin(['Papeles Comerciales'])]
+
+
+x = df_Papeles.groupby(["AñoEmision","TITULOVALOR"]).agg({"BIDTOCOVER":"mean"}).unstack().fillna(0)
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+ax = x.plot(kind='line', stacked=True, legend=['TITULOVALOR'],color=['red'],linestyle='',marker='o')
+ax.legend(('Papeles Comerciales'),frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=1)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: '{:,.2f}'.format(y) ))
+ax.title.set_fontfamily('arial')
+plt.box(on=None)
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
+import matplotlib.ticker as ticker
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDEmisiones.csv',encoding='latin-1')
+df_Papeles = df[df.TITULOVALOR.isin(['Papeles Comerciales'])]
+
+
+
+x = df_Papeles.groupby(["AñoEmision","EMISOR"]).agg({"MONTOCOLOCADO":"sum"}).unstack().fillna(0)
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+ax = x.plot(kind='bar', stacked=True, legend=['TITULOVALOR'],color=['darkblue','gold','moccasin','indigo','grey','lightgrey','darkslateblue','khaki','slateblue','blue','mediumblue','royalblue'])
+ax.legend(('Cemargos','Cemex','Codensa','Comcel','EPM','EPSA','El Cóndor','Emgesa','Grupo Argos','Isagen','Sura','Telefónica'),frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=4)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: '{:,.2f}'.format(y/1000000) + 'B'))
+ax.title.set_fontfamily('arial')
+plt.box(on=None)
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
+import matplotlib.ticker as ticker
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDEmisiones.csv',encoding='latin-1')
+df_Papeles = df[df.TITULOVALOR.isin(['Papeles Comerciales'])]
+
+
+
+x = df_Papeles.groupby(["AñoEmision","PlazoenMeses"]).agg({"MONTOCOLOCADO":"sum"}).unstack().fillna(0)
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+ax = x.plot(kind='bar', stacked=True, legend=['TITULOVALOR'],color=['slateblue','gold','moccasin','indigo','grey','lightgrey','darkslateblue','khaki','darkblue'])
+ax.legend(('2 meses','3 meses','5 meses','6 meses','7 meses','8 meses','9 meses','11 meses','12 meses'),frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=4)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: '{:,.2f}'.format(y/1000000) + 'B'))
+ax.title.set_fontfamily('arial')
+plt.box(on=None)
+

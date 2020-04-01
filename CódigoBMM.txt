@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.font_manager as font_manager
+
+
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BancosColombianos.csv',encoding='latin-1')
+df_Bancamia = df[df.ENTIDAD.isin(['BANCAMIA S.A.'])]
+df_BancoW = df[df.ENTIDAD.isin(['BANCO W'])]
+df_MundoMujer = df[df.ENTIDAD.isin(['MUNDO MUJER'])]
+df_Serfinanza = df[df.ENTIDAD.isin(['BANCO SERFINANSA'])]
+
+tick_spacing = 5
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+tipo = 'Cubrimiento de Cartera'
+
+#Gráfico
+fig = plt.figure()
+ax = plt.subplot(111)
+ax.plot(df_Bancamia['FECHAEEFF'],df_Bancamia[tipo],color='darkblue',label='Bancamía',linewidth=5)
+ax.plot(df_Bancamia['FECHAEEFF'],df_BancoW[tipo],color='gold',label='Banco W',linewidth=5)
+ax.plot(df_Bancamia['FECHAEEFF'],df_MundoMujer[tipo],color='dimgray',label='Mundo Mujer',linewidth=5)
+ax.plot(df_Bancamia['FECHAEEFF'],df_Serfinanza[tipo],color='silver',label='Serfinanza',linewidth=5)
+ax.legend(frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=10)
+ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+vals = ax.get_yticks()
+ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+plt.xticks(rotation=90)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax.title.set_text(tipo)
+ax.title.set_fontfamily('arial')
+plt.box(on=None)
+plt.show()

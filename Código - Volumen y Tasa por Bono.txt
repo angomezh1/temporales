@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.font_manager as font_manager
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDDeudaPrivada.csv',encoding='latin-1')
+
+#Apliquemos filtros
+df1 = df[df['Nemo'].str.contains("BISU01169C7")]   #Filtro 1
+df1 =df1.loc[df1['Tipo'].isin(['PRIMARIO','Primario','DEFINITIVA','Definitiva'])] #Filtro 2
+df1 = df1.loc[df1['Cantidad'] >= 500000000] #Filtro 5
+df1 = df1[~df1['TASA'].isin(['    NA    '])] #Filtro 6
+df1 = df1[~df1['TASA'].isin(['    Tasa    '])] #Filtro 6
+df1 = df1[~df1['Spread'].isin(['     NA     '])] #Filtro 6
+df1['Cantidad'] = df1['Cantidad'].astype(float) #Convertir a float la columna tasa
+df1['Spread'] = df1['Spread'].astype(float)
+df1['Fecha'] = pd.to_datetime(df1['Fecha'])
+
+df2 = df1.groupby("Fecha")
+df2 = df2.sum()
+
+
+tick_spacing1 = 50
+tick_spacing2 = 50
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+#Gráfico
+fig = plt.figure()
+ax = plt.subplot(111)
+ax.plot(df1['Fecha'],df1['Spread'],marker='*', linestyle='None',color='darkblue',alpha = 0.95,label='Tasa Negociación',markersize=5)
+ax.legend(frameon=False,prop=font,loc=1, bbox_to_anchor=(1, 1.5),ncol=10,markerscale=3)
+ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing1))
+plt.xticks(rotation=90)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax.axis(['2018-12-31', '2020-03-20', None, None])
+vals = ax.get_yticks()
+ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+plt.box(on=None)
+
+ax2 = ax.twinx()
+ax2.bar(df2.index,df2['Cantidad'],color='goldenrod',width=np.timedelta64(24, 'h'),label='Volumen Negociación')
+ax2.legend(frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=10,markerscale=3)
+ax2.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing2))
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+ax2.axis(['2018-12-31', '2020-03-20', None, None])
+vals = ax2.get_yticks()
+ax2.set_yticklabels(['{:9.0f}'.format(x/1000000) for x in vals])
+
+
+plt.box(on=None)
+plt.show()

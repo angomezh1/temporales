@@ -1,0 +1,88 @@
+## REGRESIÓN RIDGE
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.font_manager as font_manager
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Ridge
+from sklearn.linear_model import Lasso
+from sklearn.metrics import median_absolute_error
+from matplotlib.gridspec import  GridSpec
+
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDMercado.csv',encoding='latin-1')
+
+df = df.iloc[686:]
+
+
+X = df[['S0329FS 1M1Y BLC Curncy','COLOM CDS USD SR 5Y D14 Corp','BAMLC0A4CBBBEY']]
+y = df['GTCOP10Y Govt']
+
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=3)
+
+ridge  = Ridge(alpha=1,normalize=True)
+ridge.fit(X_train,y_train)
+print('wi Ridge =',ridge.coef_)
+print('w0 Ridge =',ridge.intercept_)
+print('R2 Ridge =',ridge.score(X_test,y_test))
+
+
+# lasso  = Lasso(alpha=0.5,normalize=True)
+# lasso.fit(X_train,y_train)
+# print('wi Lasso =',lasso.coef_)
+# print('w0 Lasso =',lasso.intercept_)
+# print('R2 Lasso =',lasso.score(X_test,y_test))
+
+y_pred = ridge.predict(X)
+
+print('MAE =',median_absolute_error(y, y_pred))
+MAE = median_absolute_error(y, y_pred)
+
+banda_superior = y_pred + 2*MAE
+banda_inferior = y_pred - 2*MAE
+
+#Gráfico
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=30)
+tick_spacing1 = 100
+tick_spacing2 = 5
+
+fig = plt.figure()
+
+ax1 = fig.add_subplot(1, 2, 1)
+ax1.plot(df['FECHA'],y_pred,marker='o', linestyle='solid',color='goldenrod',alpha=0.99,label='Modelo',markersize=1)
+ax1.plot(df['FECHA'],df['GTCOP10Y Govt'],marker='o',linestyle='solid',color='darkblue',alpha=0.99,label='TES10Y',markersize=1)
+ax1.fill_between(df['FECHA'],banda_inferior,banda_superior,color='lightgrey', alpha= 0.6)
+ax1.legend(frameon=False,prop=font,loc=1, bbox_to_anchor=(0.8, 1.2),ncol=10,markerscale=10)
+ax1.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing1))
+plt.xticks(rotation=90)
+plt.yticks(fontname = "Arial",fontsize=20)
+plt.xticks(fontname = "Arial",fontsize=20)
+ax1.title.set_fontfamily('arial')
+ax1.axis([None, None, None, None])
+vals = ax1.get_yticks()
+ax1.set_yticklabels(['{:,.2}'.format(x) for x in vals])
+plt.box(on=None)
+
+
+ax2 = fig.add_subplot(1, 2, 2)
+ax2.plot(df['FECHA'],y_pred,marker='o', linestyle='solid',color='goldenrod',alpha=0.99,label='Modelo',markersize=10)
+ax2.plot(df['FECHA'],df['GTCOP10Y Govt'],marker='o',linestyle='solid',color='darkblue',alpha=0.99,label='TES10Y',markersize=10)
+ax2.fill_between(df['FECHA'],banda_inferior,banda_superior,color='lightgrey', alpha= 0.6)
+ax2.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing2 ))
+plt.xticks(rotation=90)
+plt.yticks(fontname = "Arial",fontsize=20)
+plt.xticks(fontname = "Arial",fontsize=20)
+ax2.title.set_fontfamily('arial')
+ax2.axis(['10/10/2019', '16/03/2020', 5.5, 9.5])
+vals = ax2.get_yticks()
+ax2.set_yticklabels(['{:,.3}'.format(x) for x in vals])
+
+
+plt.subplots_adjust(bottom=0.1, right=3.8, top=1.9)
+plt.box(on=None)
+#plt.rc('legend', fontsize=40)
+plt.show()

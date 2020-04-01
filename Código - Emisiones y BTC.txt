@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.font_manager as font_manager
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDEmisiones.csv',encoding='latin-1')
+df = df[df.EMISOR.isin(['Banco Popular'])]
+
+df1 = df['MONTOCOLOCADO'].groupby(df['AñoEmision']).sum()
+df1 = df1.to_frame()
+df1 = df1.reset_index(level=['AñoEmision'])
+
+df2 = df['BIDTOCOVER'].groupby(df['AñoEmision']).mean()
+df2 = df2.to_frame()
+df2 = df2.reset_index(level=['AñoEmision'])
+
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+fig = plt.figure()
+ax1 = plt.subplot(111,frameon=False)
+
+ax1.bar(df1['AñoEmision'],df1['MONTOCOLOCADO'],color='darkblue')
+ax1.set_ylabel('Monto Emitido',fontname = "Arial",fontsize=15, color='darkblue')
+ax1.tick_params(axis='y', color = 'darkblue', labelcolor='darkblue')
+ax1.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: '{:,.0f}'.format(y) ))
+ax1.title.set_fontfamily('arial')
+
+ax2 = ax1.twinx()
+ax2.plot(df2['AñoEmision'],df2['BIDTOCOVER'],marker='o', linestyle='None',color='gold',markersize=10)
+ax2.set_ylabel('BTC',fontname = "Arial", fontsize=15,color='gold')
+ax2.tick_params(axis='y', color = 'gold', labelcolor='gold')
+ax1.tick_params(axis="y", labelsize=15)
+ax2.tick_params(axis="y", labelsize=15)
+
+plt.box(on=None)

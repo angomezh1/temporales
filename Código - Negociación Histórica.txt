@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.font_manager as font_manager
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BDDeudaPrivada.csv',encoding='latin-1')
+
+#Apliquemos filtros
+df1 = df[df['Nemo'].str.contains("BISA")]   #Filtro 1
+#df1 = df[df['Calificación'].isin(['AA-'])]   #Filtro 1
+df1 =df1.loc[df1['Tipo'].isin(['PRIMARIO','Primario','DEFINITIVA','Definitiva'])] #Filtro 2
+df1 = df1.loc[df1['Dias al Vto'].isin(list(np.arange(2000,2200,1)))] #Filtro 3 
+df1 = df1.loc[df1['Tipo Tasa'].isin(["IPC"])] #Filtro 4
+df1 = df1.loc[df1['Cantidad'] >= 500000000] #Filtro 5
+df1 = df1[~df1['TASA'].isin(['    NA    '])] #Filtro 6
+df1 = df1[~df1['TASA'].isin(['    Tasa    '])] #Filtro 6
+df1 = df1[~df1['Spread'].isin(['     NA     '])] #Filtro 6
+#df1['TASA'] = df1['TASA'].astype(float) #Convertir a float la columna tasa
+df1['Spread'] = df1['Spread'].astype(float)
+df1['Fecha'] = pd.to_datetime(df1['Fecha'])
+
+
+df2 = df[df['Nemo'].str.contains('BCB|BBO|DVI|CLP|BGA|BEPT|BEEB|BBTA')]   #Filtro 1
+df2 =df2.loc[df2['Tipo'].isin(['PRIMARIO','Primario','DEFINITIVA','Definitiva'])] #Filtro 2
+df2 = df2.loc[df2['Dias al Vto'].isin(list(np.arange(2000,2200,1)))] #Filtro 3 
+df2 = df2.loc[df2['Tipo Tasa'].isin(["IPC"])] #Filtro 4
+df2 = df2.loc[df2['Cantidad'] >= 500000000] #Filtro 5
+df2 = df2[~df2['TASA'].isin(['    NA    '])] #Filtro 6
+df2 = df2[~df2['Spread'].isin(['     NA     '])] #Filtro 6
+df2 = df2[~df2['TASA'].isin(['    Tasa    '])] #Filtro 6
+#df2['TASA'] = df2['TASA'].astype(float) #Convertir a float la columna tasa
+df2['Spread'] = df2['Spread'].astype(float)
+df2['Fecha'] = pd.to_datetime(df2['Fecha'])
+
+tick_spacing = 150
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+#Gráfico
+fig = plt.figure()
+ax = plt.subplot(111)
+ax.plot(df1['Fecha'],df1['Spread'],marker='o', linestyle='None',color='darkblue',alpha = 0.95,label='ISA',markersize=5)
+ax.plot(df2['Fecha'],df2['Spread'],marker='o', linestyle='None',color='goldenrod',alpha=0.6,label='AAA',markersize=5)
+ax.legend(frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=10,markerscale=3)
+ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+plt.xticks(rotation=90)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+#ax.title.set_text("Tasas")
+ax.title.set_fontfamily('arial')
+#plt.axis([None, None, 0.05, 0.09])
+vals = ax.get_yticks()
+ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+plt.box(on=None)
+plt.show()

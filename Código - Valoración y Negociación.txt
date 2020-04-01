@@ -1,0 +1,141 @@
+#CURVA TASA FIJA
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.font_manager as font_manager
+
+df_negociacion = pd.read_csv('D:/andrgome/Documents/BDPython/BDDeudaPrivada.csv',encoding='latin-1')
+df_valoracion = pd.read_csv('D:/andrgome/Documents/BDPython/BDValoracion.csv',encoding='latin-1')
+
+
+#Apliquemos filtros
+#df1 = df_negociacion.loc[df['Calificación'].isin(['AAA'])]   #Filtro 1
+df1 = df_negociacion.loc[df_negociacion['Tipo'].isin(['PRIMARIO','Primario','DEFINITIVA','Definitiva'])] #Filtro 2
+df1['Fecha'] = pd.to_datetime(df1['Fecha'])
+df1 = df1.loc[df1['Fecha'].isin(['2020-03-26'])]   #Filtro 3
+df1 = df1.loc[df1['Calificacion'].isin(['AAA'])]
+df1 = df1.loc[df1['Tipo Tasa'].isin(["TASA FIJA","Tasa Fija"])] #Filtro 4
+df1['Cantidad'] = df1['Cantidad'].astype(float) #Convertir a float la columna Cantidad
+df1 = df1.loc[df1['Cantidad'] >= 500000000] #Filtro 5
+df1 = df1[~df1['TASA'].isin(['   NA   '])] #Filtro 6
+df1 = df1[~df1['TASA'].isin(['   Tasa   '])] #Filtro 6
+df1['TASA'] = df1['TASA'].astype(float) #Convertir a float la columna tasa
+#df1['Spread'] = df1['Spread'].astype(float)
+df1['Dias al Vto'] = df1['Dias al Vto'].astype(float)
+df1['AÑOS'] = df1['Dias al Vto']/365
+
+df2 = df_valoracion.loc[df_valoracion['CALIFICACIÓN'].isin(['AAA'])]
+df2 = df2.loc[df2['TIPO TASA'].isin(['FS'])]
+df2 = df2.loc[df2['MONEDA'].isin(['COP'])]
+df2 = df2[~df2['EMISOR'].isin(['TITULARIZADORA COLOMBIANA S.A.'])] 
+df2['SPREAD VALORACIÓN'] = df2['SPREAD VALORACIÓN'].astype(float) #Convertir a float la columna tasa
+df2['DÍAS AL VTO'] = df2['DÍAS AL VTO'].astype(float)
+df2['AÑOS'] = df2['DÍAS AL VTO']/365
+
+df3 = df1.groupby("Rangos")
+df3 = df3.median()
+df3.sort_values(by=['AÑOS'],inplace=True)
+
+df5 = df_valoracion[df_valoracion['NEMOTECNICO'].str.contains("TFIT")]   
+df5['SPREAD VALORACIÓN'] = df5['SPREAD VALORACIÓN'].astype(float) #Convertir a float la columna tasa
+df5['DÍAS AL VTO'] = df5['DÍAS AL VTO'].astype(float)
+df5['AÑOS'] = df5['DÍAS AL VTO']/365
+df5.sort_values(by=['AÑOS'],inplace=True)
+
+tick_spacing = 2
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+#Gráfico
+fig = plt.figure()
+ax = plt.subplot(111)
+ax.plot(df1['AÑOS'],df1['TASA'],marker='+', linestyle='None',color='darkblue',alpha = 0.99,label='Negociación AAA',markersize=5)
+ax.plot(df2['AÑOS'],df2['SPREAD VALORACIÓN'],marker='o', linestyle='None',color='goldenrod',alpha=0.99,label='Valoración AAA',markersize=5)
+ax.plot(df3['AÑOS'],df3['TASA'],marker='o', linestyle='solid',linewidth=5,color='slateblue',alpha=0.99,label='Mediana Negociación AAA',markersize=5)
+ax.plot(df5['AÑOS'],df5['SPREAD VALORACIÓN'],marker='o', linestyle='solid',linewidth=5,color='dimgrey',alpha=0.99,label='TES',markersize=5)
+ax.legend(frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=10,markerscale=3)
+ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+plt.xticks(rotation=0)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+#ax.title.set_text("Tasas")
+ax.title.set_fontfamily('arial')
+plt.axis([None, None, 0.04, 0.1])
+vals = ax.get_yticks()
+ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+plt.box(on=None)
+plt.show()
+
+
+------------------------------------------------------------------------------------------------------------
+#CURVA UVR_IPC
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.font_manager as font_manager
+
+df_negociacion = pd.read_csv('D:/andrgome/Documents/BDPython/BDDeudaPrivada.csv',encoding='latin-1')
+df_valoracion = pd.read_csv('D:/andrgome/Documents/BDPython/BDValoracion.csv',encoding='latin-1')
+
+
+#Apliquemos filtros
+#df1 = df_negociacion.loc[df['Calificación'].isin(['AAA'])]   #Filtro 1
+df1 = df_negociacion.loc[df_negociacion['Tipo'].isin(['PRIMARIO','Primario','DEFINITIVA','Definitiva'])] #Filtro 2
+df1['Fecha'] = pd.to_datetime(df1['Fecha'])
+df1 = df1.loc[df1['Fecha'].isin(['2020-03-26'])]   #Filtro 3
+df1 = df1.loc[df1['Calificacion'].isin(['AAA'])]
+df1 = df1.loc[df1['Tipo Tasa'].isin(["IPC"])] #Filtro 4
+df1['Cantidad'] = df1['Cantidad'].astype(float) #Convertir a float la columna Cantidad
+df1 = df1.loc[df1['Cantidad'] >= 500000000] #Filtro 5
+df1 = df1[~df1['TASA'].isin(['   NA   '])] #Filtro 6
+df1 = df1[~df1['TASA'].isin(['   Tasa   '])] #Filtro 6
+#df1['TASA'] = df1['TASA'].astype(float) #Convertir a float la columna tasa
+df1['Spread'] = df1['Spread'].astype(float)
+df1['Dias al Vto'] = df1['Dias al Vto'].astype(float)
+df1['AÑOS'] = df1['Dias al Vto']/365
+
+df2 = df_valoracion.loc[df_valoracion['CALIFICACIÓN'].isin(['AAA'])]
+df2 = df2.loc[df2['TIPO TASA'].isin(['IPC'])]
+df2 = df2.loc[df2['MONEDA'].isin(['COP'])]
+df2 = df2[~df2['EMISOR'].isin(['TITULARIZADORA COLOMBIANA S.A.'])] 
+df2['SPREAD VALORACIÓN'] = df2['SPREAD VALORACIÓN'].astype(float) #Convertir a float la columna tasa
+df2['DÍAS AL VTO'] = df2['DÍAS AL VTO'].astype(float)
+df2['AÑOS'] = df2['DÍAS AL VTO']/365
+
+df3 = df1.groupby("Rangos")
+df3 = df3.median()
+df3.sort_values(by=['AÑOS'],inplace=True)
+
+df5 = df_valoracion[df_valoracion['NEMOTECNICO'].str.contains("TUVT")]   
+df5['SPREAD VALORACIÓN'] = df5['SPREAD VALORACIÓN'].astype(float) #Convertir a float la columna tasa
+df5['DÍAS AL VTO'] = df5['DÍAS AL VTO'].astype(float)
+df5['AÑOS'] = df5['DÍAS AL VTO']/365
+df5.sort_values(by=['AÑOS'],inplace=True)
+
+tick_spacing = 2
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+#Gráfico
+fig = plt.figure()
+ax = plt.subplot(111)
+ax.plot(df1['AÑOS'],df1['Spread'],marker='+', linestyle='None',color='darkblue',alpha = 0.99,label='Negociación AAA',markersize=5)
+ax.plot(df2['AÑOS'],df2['SPREAD VALORACIÓN'],marker='o', linestyle='None',color='goldenrod',alpha=0.99,label='Valoración AAA',markersize=5)
+ax.plot(df3['AÑOS'],df3['Spread'],marker='o', linestyle='solid',linewidth=5,color='slateblue',alpha=0.99,label='Mediana Negociación AAA',markersize=5)
+ax.plot(df5['AÑOS'],df5['SPREAD VALORACIÓN'],marker='o', linestyle='solid',linewidth=5,color='dimgrey',alpha=0.99,label='TES',markersize=5)
+ax.legend(frameon=False,prop=font,loc=1, bbox_to_anchor=(1.5, 1.5),ncol=10,markerscale=3)
+ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+plt.xticks(rotation=0)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+#ax.title.set_text("Tasas")
+ax.title.set_fontfamily('arial')
+plt.axis([None, None, 0.01, 0.07])
+vals = ax.get_yticks()
+ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+plt.box(on=None)
+plt.show()
