@@ -1,0 +1,73 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.font_manager as font_manager
+
+
+df = pd.read_csv('D:/andrgome/Documents/BDPython/BD_PENSIONESOBL.csv',encoding='latin-1')
+
+# #Apliquemos filtros
+df1 = df[df['Nombre_Fondo'].isin(['Fondo de Pensiones Conservador'])]   #Filtro 1
+df1['Fecha'] = pd.to_datetime(df1['Fecha'])
+df1.set_index('Fecha', inplace=True)
+df1.sort_values(by=['Fecha'],inplace=True)
+df1 = df1.loc['2019-12-31':'2020-03-14']
+df1['Valor Unidad'] = df1['Valor Unidad'].astype(float) #Convertir a float la columna tasa
+
+#Protección
+df_prot = df1.loc[df1['Nombre_Entidad'].isin(["Proteccion"])]
+df_prot['retorno_diario'] = df_prot['Valor Unidad'][1:].values/df_prot['Valor Unidad'][:-1]-1
+df_prot['retorno_acumulado']=(1 + df_prot['retorno_diario']).cumprod() - 1
+df_prot['retorno_acumulado'][1:]=df_prot['retorno_acumulado'][:-1]
+df_prot.iloc[0,6]=0
+
+#Porvenir
+df_porv = df1.loc[df1['Nombre_Entidad'].isin(["Porvenir"])]
+df_porv['retorno_diario'] = df_porv['Valor Unidad'][1:].values/df_porv['Valor Unidad'][:-1]-1
+df_porv['retorno_acumulado']=(1 + df_porv['retorno_diario']).cumprod() - 1
+df_porv['retorno_acumulado'][1:]=df_porv['retorno_acumulado'][:-1]
+df_porv.iloc[0,6]=0
+
+#Skandia
+df_skandia = df1.loc[df1['Nombre_Entidad'].isin(["Skandia Pensiones Y Cesantías S.A., Old Mutual Pensiones Y Cesantías S.A."])]
+df_skandia['retorno_diario'] = df_skandia['Valor Unidad'][1:].values/df_skandia['Valor Unidad'][:-1]-1
+df_skandia['retorno_acumulado']=(1 + df_skandia['retorno_diario']).cumprod() - 1
+df_skandia['retorno_acumulado'][1:]=df_skandia['retorno_acumulado'][:-1]
+df_skandia.iloc[0,6]=0
+
+#Colfondos
+df_colfondos = df1.loc[df1['Nombre_Entidad'].isin(["Colfondos S.A. Pensiones Y Cesantias"])]
+df_colfondos['retorno_diario'] = df_colfondos['Valor Unidad'][1:].values/df_colfondos['Valor Unidad'][:-1]-1
+df_colfondos['retorno_acumulado']=(1 + df_colfondos['retorno_diario']).cumprod() - 1
+df_colfondos['retorno_acumulado'][1:]=df_colfondos['retorno_acumulado'][:-1]
+df_colfondos.iloc[0,6]=0
+
+tick_spacing = 200
+font = font_manager.FontProperties(family='arial',weight='bold', style='normal', size=12)
+
+# #Gráfico
+fig = plt.figure()
+ax = plt.subplot(111)
+ax.plot(df_prot.index,df_prot['retorno_acumulado'],marker='o', linestyle='solid',color='darkblue',alpha = 0.99,label='Protección',markersize=3)
+ax.plot(df_porv.index,df_porv['retorno_acumulado'],marker='o', linestyle='solid',color='gold',alpha = 0.99,label='Porvenir',markersize=3)
+ax.plot(df_skandia.index,df_skandia['retorno_acumulado'],marker='o', linestyle='solid',color='dimgrey',alpha = 0.99,label='Skandia',markersize=3)
+ax.plot(df_colfondos.index,df_colfondos['retorno_acumulado'],marker='o', linestyle='solid',color='plum',alpha = 0.99,label='Colfondos',markersize=3)
+ax.legend(frameon=False,prop=font,loc=1, bbox_to_anchor=(1.2, 1.2),ncol=10,markerscale=3)
+ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+plt.xticks(rotation=90)
+plt.yticks(fontname = "Arial",fontsize=15)
+plt.xticks(fontname = "Arial",fontsize=15)
+#ax.title.set_text("Fondos de Pensiones Obligatorias Moderados")
+ax.title.set_fontfamily('arial')
+plt.axis(['2019-12-31', '2020-03-14', None, None])
+vals = ax.get_yticks()
+ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+plt.box(on=None)
+plt.show()
+
+print('Colfondos =',df_colfondos[['retorno_acumulado']].iloc[-1].values)
+print('Porvenir =',df_porv[['retorno_acumulado']].iloc[-1].values)
+print('Skandia =',df_skandia[['retorno_acumulado']].iloc[-1].values)
+print('Protección =',df_prot[['retorno_acumulado']].iloc[-1].values)
